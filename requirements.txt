@@ -11,3 +11,4 @@ torch
 torch_geometric
 networkx
 matplotlib
+tabulate
