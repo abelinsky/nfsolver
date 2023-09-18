@@ -61,10 +61,13 @@ class HydroDataset(InMemoryDataset):
             edge_indices = [[edge["source"], edge["target"]] for edge in edges]
             edge_index = torch.tensor(edge_indices, dtype=torch.long).t().contiguous()
 
-            edge_attr = [
-                [edge["attributes"]["length"], edge["attributes"]["diam_in"]]
-                for edge in edges
-            ]
+            edge_attr = torch.tensor(
+                [
+                    [edge["attributes"]["length"], edge["attributes"]["diam_in"]]
+                    for edge in edges
+                ],
+                dtype=torch.float32,
+            )
 
             data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
             data_list.append(data)
