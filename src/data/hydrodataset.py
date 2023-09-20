@@ -57,7 +57,7 @@ class HydroDataset(InMemoryDataset):
             ]
             x = torch.tensor(nodes_info, dtype=torch.float)
 
-            edges = parsed["edges"]
+            edges = parsed["links"]
             edge_indices = [[edge["source"], edge["target"]] for edge in edges]
             edge_index = torch.tensor(edge_indices, dtype=torch.long).t().contiguous()
 

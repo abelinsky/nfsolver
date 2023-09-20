@@ -2,16 +2,12 @@ import torch
 from torch.nn import Sequential, Linear, ELU
 import torch.nn.functional as F
 
-from torch_geometric.nn import MessagePassing, LayerNorm, summary
+from torch_geometric.nn import MessagePassing, LayerNorm
 from torch_geometric.data import Data
-from torch_geometric.utils import add_self_loops, segregate_self_loops, to_networkx
 from typing import Any, Dict, List
 from torch import Tensor
 from torch_geometric.typing import Adj, OptTensor
 from torch import Tensor
-
-import networkx as nx
-import matplotlib.pyplot as plt
 
 
 class GNNSConv(MessagePassing):
@@ -32,6 +28,7 @@ class GNNSConv(MessagePassing):
         super().__init__(aggr="mean")
         self.alpha = alpha
         self.latent_dim = latent_dim
+        self.hidden_layers = hidden_layers
 
         layers = []
         l = 2 * latent_dim + num_edge_features
@@ -105,16 +102,9 @@ class GNNSConv(MessagePassing):
             edge_attr: Source node features [num_edges, num_edge_features]
         """
         mlp = self.mlp_in if self.flow == "source_to_target" else self.mlp_out
-
-        # print(f"{x_j.shape=}")
-        # print(f"{x_i.shape=}")
-        # print(f"{edge_attr.shape=}")
-
         tmp = torch.cat([x_j, x_i, edge_attr], dim=-1)
         out_message = mlp(tmp)
         return out_message
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(aggr={self.aggr}, latent_dim={self.latent_dim})"
-        )
+        return f"{self.__class__.__name__}(aggr={self.aggr}, latent_dim={self.latent_dim}, alpha={self.alpha}, hidden_layers={self.hidden_layers})"

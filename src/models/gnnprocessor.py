@@ -25,6 +25,8 @@ class GNNProcessor(torch.nn.Module):
         num_edge_features: int,
         latent_dim: int = 6,
         num_convs: int = 8,
+        convs_hidden_layers=[16],
+        alpha_update_x=1.0,
     ) -> None:
         """Инициализация
 
@@ -34,17 +36,18 @@ class GNNProcessor(torch.nn.Module):
             num_edge_features (int): _description_
             latent_dim (int, optional): Размерность латентного пространства значений в вершинах графа (по умолчанию 10).
             num_convs (int, optional): Количество слоев свертки.
+            convs_hidden_layers (List[int]): Характеристики скрытых слоев светочных слоев GNN.
+            alpha_update_x (float): Коэффициент обновления латентных векторов.
         """
         super().__init__()
-        # torch.manual_seed(1234)
         self.latent_dim = latent_dim
         self.convs = torch.nn.ModuleList(
             [
                 GNNSConv(
                     latent_dim=self.latent_dim,
                     num_edge_features=num_edge_features,
-                    hidden_layers=[16],
-                    alpha=1.0,
+                    hidden_layers=convs_hidden_layers,
+                    alpha=alpha_update_x,
                 )
                 for _ in range(num_convs)
             ]
