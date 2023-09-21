@@ -41,7 +41,14 @@ class GNNProcessor(torch.nn.Module):
             alpha_update_x (float): Коэффициент обновления латентных векторов.
         """
         super().__init__()
+
+        self.out_channels = out_channels
+        self.num_edge_features = num_edge_features
         self.latent_dim = latent_dim
+        self.num_convs = num_convs
+        self.convs_hidden_layers = convs_hidden_layers
+        self.alpha_update_x = alpha_update_x
+
         self.convs = torch.nn.ModuleList(
             [
                 GNNSConv(
@@ -74,4 +81,4 @@ class GNNProcessor(torch.nn.Module):
             P=P_, edge_index=edge_index, edge_attr=edge_attr, node_attr=node_attr
         )
 
-        return P, flows, imbalance
+        return P, flows, torch.stack([imbalance])
