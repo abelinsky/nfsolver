@@ -1,5 +1,5 @@
 import torch
-from torch.nn import Sequential, Linear, ELU
+from torch.nn import Sequential, Linear, ELU, LeakyReLU
 import torch.nn.functional as F
 
 from torch_geometric.nn import MessagePassing, LayerNorm
@@ -19,13 +19,14 @@ class GNNSConv(MessagePassing):
         num_edge_features: int,
         alpha: float = 0.01,
         hidden_layers=[8],
+        aggr="mean",
     ) -> None:
         """
         Args:
             in_channels: число фичей в вершинах графа
             alpha: параметр для учета величины обновления X
         """
-        super().__init__(aggr="mean")
+        super().__init__(aggr=aggr)
         self.alpha = alpha
         self.latent_dim = latent_dim
         self.hidden_layers = hidden_layers
@@ -35,7 +36,7 @@ class GNNSConv(MessagePassing):
         layers.append(LayerNorm(l))
         for size in hidden_layers:
             layers.append(Linear(l, size))
-            layers.append(ELU())
+            layers.append(LeakyReLU())
             l = size
         layers.append(Linear(l, latent_dim))
         self.mlp_in = Sequential(*layers)
@@ -45,7 +46,7 @@ class GNNSConv(MessagePassing):
         layers.append(LayerNorm(l))
         for size in hidden_layers:
             layers.append(Linear(l, size))
-            layers.append(ELU())
+            layers.append(LeakyReLU())
             l = size
         layers.append(Linear(l, latent_dim))
         self.mlp_out = Sequential(*layers)
@@ -55,7 +56,7 @@ class GNNSConv(MessagePassing):
         layers.append(LayerNorm(l))
         for size in hidden_layers:
             layers.append(Linear(l, size))
-            layers.append(ELU())
+            layers.append(LeakyReLU())
             l = size
         layers.append(Linear(l, latent_dim))
         self.mlp_psi = Sequential(*layers)

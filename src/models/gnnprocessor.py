@@ -27,6 +27,7 @@ class GNNProcessor(torch.nn.Module):
         num_convs: int = 8,
         convs_hidden_layers=[16],
         alpha_update_x=1.0,
+        aggr="mean",
     ) -> None:
         """Инициализация
 
@@ -46,8 +47,9 @@ class GNNProcessor(torch.nn.Module):
                 GNNSConv(
                     latent_dim=self.latent_dim,
                     num_edge_features=num_edge_features,
-                    hidden_layers=convs_hidden_layers,
                     alpha=alpha_update_x,
+                    hidden_layers=convs_hidden_layers,
+                    aggr=aggr,
                 )
                 for _ in range(num_convs)
             ]
