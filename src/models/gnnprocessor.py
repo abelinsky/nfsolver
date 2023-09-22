@@ -28,6 +28,7 @@ class GNNProcessor(torch.nn.Module):
         convs_hidden_layers=[16],
         alpha_update_x=1.0,
         aggr="mean",
+        device="cpu",
     ) -> None:
         """Инициализация
 
@@ -57,15 +58,18 @@ class GNNProcessor(torch.nn.Module):
                     alpha=alpha_update_x,
                     hidden_layers=convs_hidden_layers,
                     aggr=aggr,
+                    device=device,
                 )
                 for _ in range(num_convs)
             ]
         )
-        self.final = Linear(latent_dim, out_channels)
-        self.balance_conv = BalanceConv()
+        self.final = Linear(latent_dim, out_channels).to(device)
+        self.balance_conv = BalanceConv().to(device)
+        self.device = device
 
     def forward(self, data: Data):
-        X = torch.zeros((data.num_nodes, self.latent_dim))
+        X = torch.zeros((data.num_nodes, self.latent_dim)).to(self.device)
+
         edge_index, node_attr, edge_attr = data.edge_index, data.x, data.edge_attr
 
         for conv in self.convs:

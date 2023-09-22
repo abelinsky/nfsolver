@@ -20,14 +20,18 @@ from src.models.balanceconv import BalanceConv
 class GNNStableProcessor(GNNProcessor):
     """Обновляет латентные представления вершин графа за счет использования сверточной графовой нейронной сети. Возвращает расширенный список небалансов после каждого сверточного слоя."""
 
-    def __init__(self, *args, **kwargs) -> None:
-        super(GNNStableProcessor, self).__init__(*args, **kwargs)
+    def __init__(self, device="cpu", *args, **kwargs) -> None:
+        super(GNNStableProcessor, self).__init__(device=device, *args, **kwargs)
+        self.device = device
         self.decoders = torch.nn.ModuleList(
-            [Linear(self.latent_dim, self.out_channels) for _ in range(self.num_convs)]
+            [
+                Linear(self.latent_dim, self.out_channels).to(device)
+                for _ in range(self.num_convs)
+            ]
         )
 
     def forward(self, data: Data):
-        X = torch.zeros((data.num_nodes, self.latent_dim))
+        X = torch.zeros((data.num_nodes, self.latent_dim)).to(self.device)
         edge_index, node_attr, edge_attr = data.edge_index, data.x, data.edge_attr
 
         flows_list, imbalance_list = [], []

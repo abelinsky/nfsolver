@@ -20,6 +20,7 @@ class GNNSConv(MessagePassing):
         alpha: float = 0.01,
         hidden_layers=[8],
         aggr="mean",
+        device="cpu",
     ) -> None:
         """
         Args:
@@ -39,7 +40,7 @@ class GNNSConv(MessagePassing):
             layers.append(LeakyReLU())
             l = size
         layers.append(Linear(l, latent_dim))
-        self.mlp_in = Sequential(*layers)
+        self.mlp_in = Sequential(*layers).to(device)
 
         layers = []
         l = 2 * latent_dim + num_edge_features
@@ -49,7 +50,7 @@ class GNNSConv(MessagePassing):
             layers.append(LeakyReLU())
             l = size
         layers.append(Linear(l, latent_dim))
-        self.mlp_out = Sequential(*layers)
+        self.mlp_out = Sequential(*layers).to(device)
 
         layers = []
         l = latent_dim * 3 + num_edge_features
@@ -59,7 +60,7 @@ class GNNSConv(MessagePassing):
             layers.append(LeakyReLU())
             l = size
         layers.append(Linear(l, latent_dim))
-        self.mlp_psi = Sequential(*layers)
+        self.mlp_psi = Sequential(*layers).to(device)
 
         self.reset_parameters()
 

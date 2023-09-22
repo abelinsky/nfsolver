@@ -26,13 +26,16 @@ class HydraulicsLoss(torch.nn.Module):
 
 
 class MultiHydraulicsLoss(torch.nn.Module):
-    def __init__(self, gamma: float):
+    def __init__(self, gamma: float, device):
         super().__init__()
         self.gamma = gamma
+        self.device = device
 
     def forward(self, data, P, imbalances):
         K = len(imbalances)
-        gammas = torch.tensor([self.gamma ** (K - k) for k in range(1, K + 1)])
+        gammas = torch.tensor([self.gamma ** (K - k) for k in range(1, K + 1)]).to(
+            self.device
+        )
 
         # print(f">>> in multiloss {imbalances.shape=}")
         # print(f"{gammas=}")
