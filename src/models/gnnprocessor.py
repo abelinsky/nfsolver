@@ -74,7 +74,7 @@ class GNNProcessor(torch.nn.Module):
 
         for conv in self.convs:
             X = conv(X, edge_index, node_attr, edge_attr)
-            X = F.relu(X)
+            X = F.leaky_relu(X)
 
         P = self.final(X)
         P = F.relu(P)

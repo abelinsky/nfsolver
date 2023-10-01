@@ -48,7 +48,7 @@ class GNNStableProcessor(GNNProcessor):
 
         for conv, decoder in zip(self.convs, self.decoders):
             X = conv(X, edge_index, node_attr, edge_attr)
-            X = F.relu(X)
+            X = F.leaky_relu(X)
             Pl = decoder(X)
             Pl = F.relu(Pl)
             append_results(Pl)
